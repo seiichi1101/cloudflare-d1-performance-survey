@@ -34,12 +34,42 @@ router.get(
   async (request: Request, env: Env, ctx: ExecutionContext) => {
     const startTime = Date.now();
     const { results, lastRowId, changes, duration, error } =
-      await env.DB.prepare("select sqlite_version();").all();
+      await env.DB.prepare("SELECT * FROM test LIMIT 1;").all();
+    const endTime = Date.now();
+    const json = JSON.stringify(
+      {
+        results,
+        lastRowId,
+        changes,
+        duration,
+        error,
+        startTime,
+        endTime,
+        startend: endTime - startTime,
+      },
+      null,
+      2
+    );
+    return new Response(json, {
+      headers: { "content-type": "application/json", ...corsHeaders },
+    });
+  }
+);
+
+router.get(
+  "/write",
+  async (request: Request, env: Env, ctx: ExecutionContext) => {
+    const { searchParams } = new URL(request.url);
+    const region = searchParams.get("region");
+    const startTime = Date.now();
+    const { results, lastRowId, changes, duration, error } =
+      await env.DB.prepare(
+        `INSERT INTO test (timestamp, region) VALUES (STRFTIME('%s', 'now'), '${region}')`
+      ).all();
     const endTime = Date.now();
     const json = JSON.stringify(
       {
         message: `Hello worker!`,
-        results,
         lastRowId,
         changes,
         duration,
