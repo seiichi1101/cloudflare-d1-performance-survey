@@ -1,0 +1,12 @@
+# for blog
+blog_templates
+markdown.css
+BLOG.md
+MARP.md
+.vscode
+
+node_modules
+.wrangler
+out/**
+!out/.gitkeep
+influxdb

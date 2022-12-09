@@ -1,0 +1,15 @@
+name = "arai-test-cloudflare-wokers"
+main = "src/index.ts"
+compatibility_date = "2022-11-30"
+
+workers_dev = true
+route = ""
+zone_id = ""
+
+# node_compat = true
+
+
+[[ d1_databases ]]
+binding = "DB" # i.e. available in your Worker on env.DB
+database_name = "arai-test-d1"
+database_id = "<database-id>"
