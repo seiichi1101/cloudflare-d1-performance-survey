@@ -7,6 +7,5 @@ MARP.md
 
 node_modules
 .wrangler
-out/**
-!out/.gitkeep
 influxdb
+out/local*

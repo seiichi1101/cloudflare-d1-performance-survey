@@ -1,3 +1,5 @@
+-- see https://www.finddevguides.com/Sqlite-pragma
+
 PRAGMA application_id;
 PRAGMA auto_vacuum;
 PRAGMA automatic_index;

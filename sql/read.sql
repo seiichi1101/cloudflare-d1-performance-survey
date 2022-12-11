@@ -1,1 +1,1 @@
-SELECT * FROM test;
+SELECT * FROM test ORDER BY id DESC LIMIT 1;

@@ -27,32 +27,46 @@ const corsHeaders = {
   "Access-Control-Max-Age": "86400",
 };
 
+const generateResponse = (
+  d1Result: D1Result,
+  startTime: number,
+  endTime: number
+) => {
+  const json = JSON.stringify(
+    {
+      d1Result,
+      startTime,
+      endTime,
+      dbReqDuration: endTime - startTime,
+    },
+    null,
+    2
+  );
+  if (d1Result.error) {
+    return new Response(json, {
+      status: 500,
+      headers: { "content-type": "application/json", ...corsHeaders },
+    });
+  } else {
+    return new Response(json, {
+      status: 200,
+      headers: { "content-type": "application/json", ...corsHeaders },
+    });
+  }
+};
+
 const router = Router();
+router.get("/", async (request: Request, env: Env, ctx: ExecutionContext) => {
+  return generateResponse({} as D1Result, 0, 0);
+});
 
 router.get(
   "/read",
   async (request: Request, env: Env, ctx: ExecutionContext) => {
     const startTime = Date.now();
-    const { results, lastRowId, changes, duration, error } =
-      await env.DB.prepare("SELECT * FROM test LIMIT 1;").all();
+    const result = await env.DB.prepare("SELECT * FROM test LIMIT 1;").all();
     const endTime = Date.now();
-    const json = JSON.stringify(
-      {
-        results,
-        lastRowId,
-        changes,
-        duration,
-        error,
-        startTime,
-        endTime,
-        startend: endTime - startTime,
-      },
-      null,
-      2
-    );
-    return new Response(json, {
-      headers: { "content-type": "application/json", ...corsHeaders },
-    });
+    return generateResponse(result, startTime, endTime);
   }
 );
 
@@ -62,28 +76,11 @@ router.get(
     const { searchParams } = new URL(request.url);
     const region = searchParams.get("region");
     const startTime = Date.now();
-    const { results, lastRowId, changes, duration, error } =
-      await env.DB.prepare(
-        `INSERT INTO test (timestamp, region) VALUES (STRFTIME('%s', 'now'), '${region}')`
-      ).all();
+    const result = await env.DB.prepare(
+      `INSERT INTO test (timestamp, region) VALUES (STRFTIME('%s', 'now'), '${region}')`
+    ).all();
     const endTime = Date.now();
-    const json = JSON.stringify(
-      {
-        message: `Hello worker!`,
-        lastRowId,
-        changes,
-        duration,
-        error,
-        startTime,
-        endTime,
-        startend: endTime - startTime,
-      },
-      null,
-      2
-    );
-    return new Response(json, {
-      headers: { "content-type": "application/json", ...corsHeaders },
-    });
+    return generateResponse(result, startTime, endTime);
   }
 );
 
